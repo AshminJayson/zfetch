@@ -4,18 +4,32 @@ import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/tauri";
 
 export default function Search() {
-    const [searchValue, setSearchValue] = useState("");
+    const [searchResult, setSearchResult] = useState<string[]>([]);
     const [searchKeyword, setSearchKeyword] = useState("");
 
     useEffect(() => {
+        const keydownHandler = (e: KeyboardEvent) => {
+            if (e.key == "Enter") {
+                if (searchResult.length > 0) {
+                    navigator.clipboard.writeText(searchResult[0]);
+                }
+            }
+        };
+
+        window.addEventListener("keydown", keydownHandler);
+
         if (searchKeyword == "") {
-            setSearchValue("");
+            setSearchResult([]);
             return;
         }
 
-        invoke<string>("matcher", { key: searchKeyword })
-            .then((result) => setSearchValue(result))
+        invoke<string[]>("matcher", { key: searchKeyword })
+            .then((result) => setSearchResult(result))
             .catch(console.error);
+
+        return () => {
+            window.removeEventListener("keydown", keydownHandler);
+        };
     }, [searchKeyword]);
 
     // Necessary because we will have to use Greet as a component later.
@@ -31,7 +45,7 @@ export default function Search() {
                     Search
                 </label>
             </div>
-            {searchValue}
+            {searchResult}
         </div>
     );
 }

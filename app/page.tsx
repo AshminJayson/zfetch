@@ -13,25 +13,27 @@ export default function Home() {
         appWindow.setFocus();
     }
 
+    const closeApp = () => {
+        if (appWindow) appWindow.close();
+    };
+
     useEffect(() => {
         setupAppWindow();
     }, []);
     return (
-        <main className="flex flex-col min-h-screen p-5 gap-4">
-            <button
-                onClick={() => {
-                    if (appWindow == null) {
-                        console.log("no window");
-                        return;
-                    }
-                    console.log("dragging");
-                    appWindow.startDragging();
-                }}
+        <main className="min-h-screen">
+            <div
+                data-tauri-drag-region="true"
+                className="p-5 cursor-pointer text-sm font-extrabold flex w-full justify-between"
             >
-                Some button
-            </button>
-            <p>&gt; Z Fetch</p>
-            <Search />
+                <p>
+                    <span className="text-blue-500">_</span>Z Fetch
+                </p>
+                {/* <button onClick={closeApp}>Close</button> */}
+            </div>
+            <div className="px-5 flex flex-col">
+                <Search />
+            </div>
         </main>
     );
 }

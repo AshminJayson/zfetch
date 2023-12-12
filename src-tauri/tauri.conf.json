@@ -91,6 +91,7 @@
     },
     "windows": [
       {
+        "transparent": true,
         "decorations": false,
         "fullscreen": false,
         "height": 300,
