@@ -26,13 +26,23 @@ fn match_key<'a>(key: &str) -> Option<Box<str>> {
 
     let keys: Vec<&str> = key_value_pairs.keys().map(|k| *k).collect();
 
-    let mut fuzzy_candidates: Vec<&str> = keys
+    let distanced_candidates: Vec<(&str, usize)> = keys
         .iter()
-        .filter(|&k| levenshtein_up_to_min_length(key, k) <= 5)
-        .cloned()
+        .filter_map(|&k| {
+            let distance = levenshtein_up_to_min_length(key, k);
+            if distance <= 5 {
+                Some((k, distance))
+            } else {
+                None
+            }
+        })
         .collect();
 
+    println!("Distanced candidates: {:?}", distanced_candidates);
+
     // Sort fuzzy candidates by Levenshtein distance
+    let mut fuzzy_candidates: Vec<&str> = distanced_candidates.iter().map(|&(s, _)| s).collect();
+
     fuzzy_candidates.sort_by(|&a, &b| {
         levenshtein_up_to_min_length(key, a).cmp(&levenshtein_up_to_min_length(key, b))
     });
@@ -48,7 +58,7 @@ fn match_key<'a>(key: &str) -> Option<Box<str>> {
 #[tauri::command]
 fn matcher(key: &str) -> String {
     if let Some(value) = match_key(key) {
-        println!("Match found! Value: {}", value);
+        println!("Match found! Key {} Value: {}", key, value);
         value.to_string()
     } else {
         println!("No match found for key: {}", key);
