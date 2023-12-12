@@ -65,8 +65,21 @@ export default function Search() {
             value: valueInputRef.current.value,
         })
             .then(() => {
+                // Don't ask me why, it seemed like a good UX feature
+                setSearchKeyword(keyInputRef.current!.value);
                 keyInputRef.current!.value = "";
                 valueInputRef.current!.value = "";
+            })
+            .catch(console.error);
+    };
+
+    const deleteRecord = (index: number) => {
+        invoke("deleterecord", {
+            key: searchResult[selectedResult][index],
+        })
+            .then(() => {
+                setSearchKeyword("");
+                setSelectedResult(0);
             })
             .catch(console.error);
     };
@@ -86,7 +99,7 @@ export default function Search() {
             <div className="mb-10 z-10">
                 {searchResult.length > 0 &&
                     searchResult.map((result, ind) => (
-                        <p
+                        <div
                             key={ind}
                             onClick={() => {
                                 setSelectedResult(ind);
@@ -94,19 +107,27 @@ export default function Search() {
                                     searchResult[ind][1]
                                 );
                             }}
-                            className={`mb-4 flex flex-col`}
+                            className={`mb-4 flex items-center`}
                         >
-                            <span
-                                className={`${
-                                    selectedResult == ind
-                                        ? "underline font-semibold"
-                                        : ""
-                                } text-xs font-extralight}`}
+                            <div className="flex flex-col w-full">
+                                <span
+                                    className={`${
+                                        selectedResult == ind
+                                            ? "underline font-semibold"
+                                            : ""
+                                    } text-xs font-extralight}`}
+                                >
+                                    {result[0]}
+                                </span>
+                                <span>{result[1]}</span>
+                            </div>
+                            <button
+                                className="text-xs font-extralight cursor-pointer"
+                                onClick={() => deleteRecord(ind)}
                             >
-                                {result[0]}
-                            </span>
-                            <span>{result[1]}</span>
-                        </p>
+                                Delete
+                            </button>
+                        </div>
                     ))}
             </div>
             <div className="fixed z-20 left-0 bottom-0 w-full items-center justify-center gap-2 flex bg-black px-5 py-3 border-t">

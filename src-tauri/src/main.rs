@@ -107,15 +107,34 @@ fn insert_key_value(key: String, value: String) {
     }
 }
 
+fn delete_key_value(key: &str) -> Option<String> {
+    if let Ok(mut map) = KEY_VALUE_PAIRS.lock() {
+        if let Some(value) = map.remove(key) {
+            return Some(value.to_string());
+        }
+    }
+    None
+}
+
 #[tauri::command]
 fn addrecord(key: &str, value: &str) -> String {
-    println!("Key: {} Value: {}", key, value);
-    format!("Key: {} Value: {}", key, value);
-
-    // Add the key-value pair to the key_value_pairs HashMap
     insert_key_value(key.to_string(), value.to_string());
-    // Return a success message
+    println!("Added record: Key: {}, Value: {}", key, value);
     format!("Added record: Key: {}, Value: {}", key, value)
+}
+
+#[tauri::command]
+fn deleterecord(key: &str) -> String {
+    println!("Key: {}", key);
+    format!("Key: {}", key);
+
+    if let Some(value) = delete_key_value(key) {
+        println!("Deleted record: Key: {}, Value: {}", key, value);
+        format!("Deleted record: Key: {}, Value: {}", key, value)
+    } else {
+        println!("No record found for key: {}", key.to_string());
+        format!("No record found for key: {}", key)
+    }
 }
 
 #[tauri::command]
@@ -124,7 +143,12 @@ fn greet(name: &str) -> String {
 }
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, matcher, addrecord])
+        .invoke_handler(tauri::generate_handler![
+            greet,
+            matcher,
+            addrecord,
+            deleterecord
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
