@@ -5,19 +5,29 @@ use lazy_static::lazy_static;
 use levenshtein::levenshtein;
 use std::{collections::HashMap, sync::Mutex};
 
+mod db;
+
 lazy_static! {
     static ref KEY_VALUE_PAIRS: Mutex<HashMap<&'static str, &'static str>> = {
         let mut map = HashMap::new();
-        map.insert("username", "Ashmin Jayson");
-        map.insert(
-            "Address Line 1",
-            "Edappulavan House Kottappady PO Kothamanagalam",
-        );
-        map.insert("Mother's name", "Gracy Jayson");
-        map.insert("Phone number", "+1234567890");
-        map.insert("Email", "ashmin@example.com");
-        map.insert("Occupation", "Software Developer");
-        map.insert("Aadhar Number", "212980970069");
+        // map.insert("username", "Ashmin Jayson");
+        // map.insert(
+        //     "Address Line 1",
+        //     "Edappulavan House Kottappady PO Kothamanagalam",
+        // );
+        // map.insert("Mother's name", "Gracy Jayson");
+        // map.insert("Phone number", "+1234567890");
+        // map.insert("Email", "ashmin@example.com");
+        // map.insert("Occupation", "Software Developer");
+        // map.insert("Aadhar Number", "212980970069");
+
+        let key_value_pairs = db::load_key_value_pairs();
+        for (key, value) in key_value_pairs {
+            let key_static: &'static str = Box::leak(key.into_boxed_str());
+            let value_static: &'static str = Box::leak(value.into_boxed_str());
+            map.insert(key_static, value_static);
+        }
+        
         Mutex::new(map)
     };
 }
@@ -104,12 +114,14 @@ fn insert_key_value(key: String, value: String) {
         let key_static: &'static str = Box::leak(key.into_boxed_str());
         let value_static: &'static str = Box::leak(value.into_boxed_str());
         map.insert(key_static, value_static);
+        db::insert_key_value(key_static, value_static);
     }
 }
 
 fn delete_key_value(key: &str) -> Option<String> {
     if let Ok(mut map) = KEY_VALUE_PAIRS.lock() {
         if let Some(value) = map.remove(key) {
+            db::delete_key_value(key);
             return Some(value.to_string());
         }
     }
@@ -147,8 +159,13 @@ fn main() {
             greet,
             matcher,
             addrecord,
-            deleterecord
-        ])
+            deleterecord,
+            // db::getappdatapath
+        ]).setup(|_app| {
+            db::init();
+
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
