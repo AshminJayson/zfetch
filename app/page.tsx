@@ -24,12 +24,16 @@ export default function Home() {
         <main className="min-h-screen">
             <div
                 data-tauri-drag-region="true"
-                className="p-5 cursor-pointer text-sm font-extrabold flex w-full justify-between"
+                className="px-5 py-4 cursor-pointer text-sm font-extrabold flex w-full justify-between"
             >
-                <p>
+                <p data-tauri-drag-region="true">
                     <span className="text-blue-500">_</span>Z Fetch
                 </p>
-                {/* <button onClick={closeApp}>Close</button> */}
+                <div className="flex gap-4">
+                    <button onClick={closeApp} className="text-red-500">
+                        X
+                    </button>
+                </div>
             </div>
             <div className="px-5 flex flex-col">
                 <Search />

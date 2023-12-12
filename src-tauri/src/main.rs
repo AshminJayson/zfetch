@@ -9,7 +9,7 @@ fn levenshtein_up_to_min_length(a: &str, b: &str) -> usize {
     levenshtein(&a[..min_length], &b[..min_length])
 }
 
-fn match_key<'a>(key: &str) -> Option<Box<str>> {
+fn match_key<'a>(key: &str) -> Vec<Box<str>> {
     let mut key_value_pairs = HashMap::new();
     key_value_pairs.insert("username", "Ashmin Jayson");
     key_value_pairs.insert(
@@ -17,9 +17,12 @@ fn match_key<'a>(key: &str) -> Option<Box<str>> {
         "Edappulavan House Kottappady PO Kothamanagalam",
     );
     key_value_pairs.insert("Mother's name", "Gracy Jayson");
+    key_value_pairs.insert("Phone number", "+1234567890");
+    key_value_pairs.insert("Email", "ashmin@example.com");
+    key_value_pairs.insert("Occupation", "Software Developer");
 
     if let Some(value) = key_value_pairs.get(key).copied() {
-        return Some(value.to_owned().into_boxed_str());
+        return vec![value.to_owned().into_boxed_str()];
     }
 
     // Fuzzy match with a threshold of 5 (adjust as needed)
@@ -30,7 +33,7 @@ fn match_key<'a>(key: &str) -> Option<Box<str>> {
         .iter()
         .filter_map(|&k| {
             let distance = levenshtein_up_to_min_length(key, k);
-            if distance <= 5 {
+            if distance <= 3 {
                 Some((k, distance))
             } else {
                 None
@@ -38,7 +41,7 @@ fn match_key<'a>(key: &str) -> Option<Box<str>> {
         })
         .collect();
 
-    println!("Distanced candidates: {:?}", distanced_candidates);
+    // println!("Distanced candidates: {:?}", distanced_candidates);
 
     // Sort fuzzy candidates by Levenshtein distance
     let mut fuzzy_candidates: Vec<&str> = distanced_candidates.iter().map(|&(s, _)| s).collect();
@@ -47,23 +50,32 @@ fn match_key<'a>(key: &str) -> Option<Box<str>> {
         levenshtein_up_to_min_length(key, a).cmp(&levenshtein_up_to_min_length(key, b))
     });
 
-    if !fuzzy_candidates.is_empty() {
-        let matched_key = fuzzy_candidates[0];
-        return Some(key_value_pairs[matched_key].to_owned().into_boxed_str());
+    let matched_values: Vec<Box<str>> = fuzzy_candidates
+        .iter()
+        .map(|&k| key_value_pairs[k].to_owned().into_boxed_str())
+        .collect();
+
+    if matched_values.len() > 0 {
+        println!("Matched values: {:?}", matched_values);
+        return matched_values;
     }
 
-    None
+    vec![]
 }
 
 #[tauri::command]
-fn matcher(key: &str) -> String {
-    if let Some(value) = match_key(key) {
-        println!("Match found! Key {} Value: {}", key, value);
-        value.to_string()
+fn matcher(key: &str) -> Vec<String> {
+    let matches: Vec<Box<str>> = match_key(key);
+    let result: Vec<String> = matches.iter().map(|s| s.to_string()).collect();
+
+    println!("Matches: {:?}", matches);
+    if matches.len() > 0 {
+        println!("Match found! Key {} Value: {:?}", key, matches);
     } else {
         println!("No match found for key: {}", key);
-        format!("No match found for key: {}", key)
     }
+
+    result
 }
 
 #[tauri::command]

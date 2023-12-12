@@ -6,35 +6,56 @@ import { invoke } from "@tauri-apps/api/tauri";
 export default function Search() {
     const [searchResult, setSearchResult] = useState<string[]>([]);
     const [searchKeyword, setSearchKeyword] = useState("");
+    const [selectedResult, setSelectedResult] = useState(0);
 
     useEffect(() => {
-        const keydownHandler = (e: KeyboardEvent) => {
-            if (e.key == "Enter") {
-                if (searchResult.length > 0) {
-                    navigator.clipboard.writeText(searchResult[0]);
-                }
-            }
-        };
-
-        window.addEventListener("keydown", keydownHandler);
-
         if (searchKeyword == "") {
             setSearchResult([]);
             return;
         }
 
+        setSelectedResult(0);
+
         invoke<string[]>("matcher", { key: searchKeyword })
             .then((result) => setSearchResult(result))
             .catch(console.error);
+    }, [searchKeyword]);
 
+    useEffect(() => {
+        const keydownHandler = (e: KeyboardEvent) => {
+            switch (e.key) {
+                case "Enter":
+                    if (searchResult.length > 0) {
+                        console.log(searchResult[selectedResult]);
+                        navigator.clipboard.writeText(
+                            searchResult[selectedResult]
+                        );
+                    }
+                    break;
+                case "ArrowUp":
+                    if (selectedResult > 0) {
+                        setSelectedResult(selectedResult - 1);
+                    }
+                    break;
+                case "ArrowDown":
+                    if (selectedResult < searchResult.length - 1) {
+                        setSelectedResult(selectedResult + 1);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        };
+
+        window.addEventListener("keydown", keydownHandler);
         return () => {
             window.removeEventListener("keydown", keydownHandler);
         };
-    }, [searchKeyword]);
+    }, [searchResult, selectedResult]);
 
     // Necessary because we will have to use Greet as a component later.
     return (
-        <div className="text-sm flex flex-col gap-4">
+        <div className="text-sm flex flex-col gap-4 mb-8">
             <div className="relative h-11 w-full min-w-[200px]">
                 <input
                     className="peer h-full w-full border-b border-blue-gray-200 bg-transparent pt-4 pb-1.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border-blue-gray-200 focus:border-gray-500 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
@@ -45,7 +66,25 @@ export default function Search() {
                     Search
                 </label>
             </div>
-            {searchResult}
+            <div className="flex justify-end gap-4">
+                <button>[]</button>
+                <button>+</button>
+            </div>
+            {searchResult.length > 0 &&
+                searchResult.map((result, ind) => (
+                    <p
+                        key={ind}
+                        onClick={() => {
+                            setSelectedResult(ind);
+                            navigator.clipboard.writeText(searchResult[ind]);
+                        }}
+                        className={`${
+                            selectedResult == ind ? "underline" : ""
+                        }`}
+                    >
+                        {result}
+                    </p>
+                ))}
         </div>
     );
 }
