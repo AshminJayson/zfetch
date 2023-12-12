@@ -4,15 +4,9 @@
 use levenshtein::levenshtein;
 use std::collections::HashMap;
 
-fn fuzzy_match<'a>(input: &str, candidates: &'a [&'a str], threshold: usize) -> Option<Box<str>> {
-    candidates.iter().find_map(|&candidate| {
-        let distance = levenshtein(input, candidate);
-        if distance <= threshold {
-            Some(candidate.to_owned().into_boxed_str())
-        } else {
-            None
-        }
-    })
+fn levenshtein_up_to_min_length(a: &str, b: &str) -> usize {
+    let min_length = a.len().min(b.len());
+    levenshtein(&a[..min_length], &b[..min_length])
 }
 
 fn match_key<'a>(key: &str) -> Option<Box<str>> {
@@ -29,17 +23,26 @@ fn match_key<'a>(key: &str) -> Option<Box<str>> {
     }
 
     // Fuzzy match with a threshold of 5 (adjust as needed)
-    let fuzzy_candidates: Vec<Box<str>> = key_value_pairs
-        .keys()
-        .filter_map(|&k| fuzzy_match(key, &[k], 10))
+
+    let keys: Vec<&str> = key_value_pairs.keys().map(|k| *k).collect();
+
+    let mut fuzzy_candidates: Vec<&str> = keys
+        .iter()
+        .filter(|&k| levenshtein_up_to_min_length(key, k) <= 5)
+        .cloned()
         .collect();
 
-    if fuzzy_candidates.len() == 1 {
-        let matched_key = fuzzy_candidates[0].clone();
-        return Some(key_value_pairs[&*matched_key].to_owned().into_boxed_str());
-    } else {
-        None
+    // Sort fuzzy candidates by Levenshtein distance
+    fuzzy_candidates.sort_by(|&a, &b| {
+        levenshtein_up_to_min_length(key, a).cmp(&levenshtein_up_to_min_length(key, b))
+    });
+
+    if !fuzzy_candidates.is_empty() {
+        let matched_key = fuzzy_candidates[0];
+        return Some(key_value_pairs[matched_key].to_owned().into_boxed_str());
     }
+
+    None
 }
 
 #[tauri::command]
