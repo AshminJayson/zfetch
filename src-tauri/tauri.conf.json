@@ -94,10 +94,10 @@
         "transparent": true,
         "decorations": false,
         "fullscreen": false,
-        "height": 300,
+        "height": 400,
         "resizable": true,
-        "title": "zfetch",
-        "width": 250
+        "title": "_Z Fetch",
+        "width": 300
       }
     ]
   }

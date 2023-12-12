@@ -1,16 +1,18 @@
 "use client";
 import { useEffect, useState } from "react";
 import Search from "./search";
-import { WebviewWindow, appWindow } from "@tauri-apps/api/window";
+import { LogicalPosition, WebviewWindow } from "@tauri-apps/api/window";
 
 export default function Home() {
     const [appWindow, setAppWindow] = useState<WebviewWindow | null>(null);
 
     // Import appWindow and save it inside the state for later usage
     async function setupAppWindow() {
-        const appWindow = (await import("@tauri-apps/api/window")).appWindow;
-        setAppWindow(appWindow);
-        appWindow.setFocus();
+        const _appwindow = (await import("@tauri-apps/api/window")).appWindow;
+        setAppWindow(_appwindow);
+
+        // retrievedAppWindow.setPosition(new LogicalPosition(100, 0));
+        _appwindow.setFocus();
     }
 
     const closeApp = () => {
