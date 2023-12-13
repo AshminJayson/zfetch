@@ -20,6 +20,10 @@ serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.5.3", features = [ "window-start-dragging", "window-set-maximizable", "window-set-minimizable", "window-set-min-size", "window-set-position", "window-set-max-size", "window-set-resizable", "window-show", "window-set-focus", "window-request-user-attention", "window-hide", "window-maximize", "window-minimize", "window-close"] }
 levenshtein = "1.0.5"
 lazy_static = "1.4.0"
+dirs = "5.0.1"
+diesel = { version = "2.1.0", features = ["sqlite"] }
+diesel_migrations = "2.1.0"
+libsqlite3-sys = { version = "0.25.2", features = ["bundled"] }
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
