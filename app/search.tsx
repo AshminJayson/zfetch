@@ -10,30 +10,30 @@ export default function Search() {
     const keyInputRef = useRef<HTMLInputElement | null>(null);
     const valueInputRef = useRef<HTMLInputElement | null>(null);
 
+    const copyToClipboard = (value: string) => {
+        navigator.clipboard.writeText(value);
+    };
+
     useEffect(() => {
         if (searchKeyword == "") {
             setSearchResult([]);
             return;
         }
 
-        setSelectedResult(0);
-
         invoke<string[][]>("matcher", { key: searchKeyword })
-            .then((result) => setSearchResult(result))
+            .then((result) => {
+                setSearchResult(result);
+                setSelectedResult(0);
+            })
             .catch(console.error);
     }, [searchKeyword]);
 
     useEffect(() => {
         const keydownHandler = (e: KeyboardEvent) => {
+            if (searchResult.length > 0)
+                copyToClipboard(searchResult[selectedResult][1]);
+
             switch (e.key) {
-                case "Enter":
-                    if (searchResult.length > 0) {
-                        console.log(searchResult[selectedResult]);
-                        navigator.clipboard.writeText(
-                            searchResult[selectedResult][1]
-                        );
-                    }
-                    break;
                 case "ArrowUp":
                     if (selectedResult > 0) {
                         setSelectedResult(selectedResult - 1);
