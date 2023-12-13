@@ -124,10 +124,9 @@ Follow the steps below to setup a local development environment
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-* The installer isn't currently released therefore build the project and use the .exe file
-    ```sh
-        npm run tauri build
-    ```
+* Download and run the installer from https://github.com/AshminJayson/zfetch/releases
+* Add whatever required key and value pairs as needed
+* Search for those, selected fields automatically get copied to your clipboard ( I'm be checking if this is really is better than having to press enter after making a selection )
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
