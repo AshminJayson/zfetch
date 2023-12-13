@@ -7,6 +7,7 @@ export default function Search() {
     const [searchResult, setSearchResult] = useState<string[][]>([]);
     const [searchKeyword, setSearchKeyword] = useState("");
     const [selectedResult, setSelectedResult] = useState(0);
+    const searchInputRef = useRef<HTMLInputElement | null>(null);
     const keyInputRef = useRef<HTMLInputElement | null>(null);
     const valueInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -68,6 +69,7 @@ export default function Search() {
                 // Don't ask me why, it seemed like a good UX feature
                 setSearchKeyword(keyInputRef.current!.value);
                 keyInputRef.current!.value = "";
+                keyInputRef.current!.focus(); //Set focus for immediately entering next key
                 valueInputRef.current!.value = "";
             })
             .catch(console.error);
@@ -88,6 +90,8 @@ export default function Search() {
         <div className="relative text-sm flex flex-col gap-4 mb-8">
             <div className="relative h-11 w-full min-w-[200px]">
                 <input
+                    ref={searchInputRef}
+                    autoFocus
                     className="peer h-full w-full border-b border-blue-gray-200 bg-transparent pt-4 pb-1.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border-blue-gray-200 focus:border-gray-500 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
                     placeholder=" "
                     onChange={(e) => setSearchKeyword(e.target.value)}

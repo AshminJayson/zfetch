@@ -10,16 +10,6 @@ mod db;
 lazy_static! {
     static ref KEY_VALUE_PAIRS: Mutex<HashMap<&'static str, &'static str>> = {
         let mut map = HashMap::new();
-        // map.insert("username", "Ashmin Jayson");
-        // map.insert(
-        //     "Address Line 1",
-        //     "Edappulavan House Kottappady PO Kothamanagalam",
-        // );
-        // map.insert("Mother's name", "Gracy Jayson");
-        // map.insert("Phone number", "+1234567890");
-        // map.insert("Email", "ashmin@example.com");
-        // map.insert("Occupation", "Software Developer");
-        // map.insert("Aadhar Number", "212980970069");
 
         let key_value_pairs = db::load_key_value_pairs();
         for (key, value) in key_value_pairs {
@@ -27,7 +17,7 @@ lazy_static! {
             let value_static: &'static str = Box::leak(value.into_boxed_str());
             map.insert(key_static, value_static);
         }
-        
+
         Mutex::new(map)
     };
 }
@@ -83,7 +73,7 @@ fn match_key<'a>(key: &str) -> Vec<(Box<str>, Box<str>)> {
             .collect();
 
         if !matched_values.is_empty() {
-            println!("Matched values: {:?}", matched_values);
+            // println!("Matched values: {:?}", matched_values);
             return matched_values;
         }
     }
@@ -99,12 +89,12 @@ fn matcher(key: &str) -> Vec<(String, String)> {
         .map(|&(ref k, ref v)| (k.to_string(), v.to_string()))
         .collect();
 
-    println!("Matches: {:?}", matches);
-    if !matches.is_empty() {
-        println!("Match found! for Key {} Value: {:?}", key, matches);
-    } else {
-        println!("No match found for key: {}", key);
-    }
+    // println!("Matches: {:?}", matches);
+    // if !matches.is_empty() {
+    //     println!("Match found! for Key {} Value: {:?}", key, matches);
+    // } else {
+    //     println!("No match found for key: {}", key);
+    // }
 
     result
 }
@@ -131,20 +121,19 @@ fn delete_key_value(key: &str) -> Option<String> {
 #[tauri::command]
 fn addrecord(key: &str, value: &str) -> String {
     insert_key_value(key.to_string(), value.to_string());
-    println!("Added record: Key: {}, Value: {}", key, value);
+    // println!("Added record: Key: {}, Value: {}", key, value);
     format!("Added record: Key: {}, Value: {}", key, value)
 }
 
 #[tauri::command]
 fn deleterecord(key: &str) -> String {
-    println!("Key: {}", key);
     format!("Key: {}", key);
 
     if let Some(value) = delete_key_value(key) {
-        println!("Deleted record: Key: {}, Value: {}", key, value);
+        // println!("Deleted record: Key: {}, Value: {}", key, value);
         format!("Deleted record: Key: {}, Value: {}", key, value)
     } else {
-        println!("No record found for key: {}", key.to_string());
+        // println!("No record found for key: {}", key.to_string());
         format!("No record found for key: {}", key)
     }
 }
@@ -161,7 +150,8 @@ fn main() {
             addrecord,
             deleterecord,
             // db::getappdatapath
-        ]).setup(|_app| {
+        ])
+        .setup(|_app| {
             db::init();
 
             Ok(())
