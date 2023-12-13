@@ -178,7 +178,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@JaysonAshmin](https://twitter.com/JaysonAshmin) - ashminjayson10@gmail.com
+Ashmin Jayson - [@JaysonAshmin](https://twitter.com/JaysonAshmin) - ashminjayson10@gmail.com
 
 Project Link: [https://github.com/AshminJayson/zfetch](https://github.com/AshminJayson/zfetch)
 
