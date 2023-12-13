@@ -125,8 +125,9 @@ Follow the steps below to setup a local development environment
 ## Usage
 
 * Download and run the installer from https://github.com/AshminJayson/zfetch/releases
-* Add whatever required key and value pairs as needed
-* Search for those, selected fields automatically get copied to your clipboard ( I'm be checking if this is really is better than having to press enter after making a selection )
+* To get quick access _pin the app to your taskbar_ and then use _win + position[1,2,3] on taskbar_ to quick launch it. ( I'll be working a proper hotkey later )
+* Add whatever data in the form of key - value pairs.
+* Search for those, selected fields automatically get copied to your clipboard ( I'm be checking if this is really is better than having to press enter after making a selection ).
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
