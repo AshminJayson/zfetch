@@ -4,9 +4,9 @@ use std::path::Path;
 use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
 
-use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
+// use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 
-const MIGRATIONS: EmbeddedMigrations = embed_migrations!("migrations");
+// const MIGRATIONS: EmbeddedMigrations = embed_migrations!("migrations");
 
 // Creating the Schema for the table
 #[derive(Queryable, Selectable)]
@@ -31,16 +31,16 @@ pub fn init() {
     }
     create_table();
 
-    run_migrations();
+    // run_migrations();
 }
 
 // create records table
 //
 
-fn run_migrations() {
-    let mut connection = establish_connection();
-    connection.run_pending_migrations(MIGRATIONS).unwrap();
-}
+// fn run_migrations() {
+//     let mut connection = establish_connection();
+//     connection.run_pending_migrations(MIGRATIONS).unwrap();
+// }
 
 fn establish_connection() -> SqliteConnection {
     let db_path = "sqlite://".to_string() + get_db_path().as_str();
